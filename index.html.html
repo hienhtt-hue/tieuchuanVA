@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Căn tin Âu Cơ - Trường Việt Mỹ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Đổi sang font Plus Jakarta Sans giúp tối ưu hiển thị trên màn hình lớn/máy chiếu thuyết trình */
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --brand-color: #9a0036;
+            --brand-dark: #7a002b;
+            --brand-light: #fdf2f4;
+            --sidebar-width: 260px;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f1f5f9; 
+            color: #1e293b;
+            letter-spacing: -0.01em; /* Tối ưu khoảng cách chữ giúp đọc từ xa tốt hơn */
+        }
+
+        .bg-brand { background-color: var(--brand-color); }
+        .text-brand { color: var(--brand-color); }
+        .border-brand { border-color: var(--brand-color); }
+
+        /* Custom Scrollbar for widgets */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        .widget-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .widget-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+        }
+
+        /* Checkbox styling */
+        .task-checkbox:checked + div {
+            background-color: var(--brand-color);
+            border-color: var(--brand-color);
+        }
+        .task-checkbox:checked + div svg {
+            display: block;
+        }
+        .task-label.completed {
+            text-decoration: line-through;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <aside class="w-[260px] bg-white border-r border-slate-200 flex flex-col hidden md:flex flex-shrink-0 z-20">
+        <div class="p-6 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-white rounded-lg shadow-sm border border-slate-100 p-1 flex-shrink-0">
+                    <img src="https://cdn2.tuoitre.vn/thumb_w/480/471584752817336320/2025/5/17/photo-1747464168345-1747464168477929651315.jpg" alt="Logo" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-brand uppercase leading-tight text-sm tracking-wider">Căn tin trường học</h1>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hệ thống trường Việt Mỹ</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-brand/10 text-brand rounded-xl font-semibold text-sm transition-colors">
+                <i class="fas fa-chart-pie w-5"></i> Tổng quan (Dashboard)
+            </a>
+            <a href="#checklist" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 rounded-xl font-medium text-sm transition-colors">
+                <i class="fas fa-tasks w-5"></i> Checklist Công việc
+            </a>
+            <a href="#quytrinh" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 rounded-xl font-medium text-sm transition-colors">
+                <i class="fas fa-project-diagram w-5"></i> Quy trình 5 Bước
+            </a>
+            <a href="#tieuchuan" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 rounded-xl font-medium text-sm transition-colors">
+                <i class="fas fa-id-card-alt w-5"></i> Tiêu chuẩn & Tác phong
+            </a>
+            <a href="#baocao" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 rounded-xl font-medium text-sm transition-colors">
+                <i class="fas fa-file-invoice-dollar w-5"></i> Lưu trữ & Báo cáo
+            </a>
+            
+            <div class="pt-4 pb-2">
+                <p class="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tiêu chuẩn nâng cao</p>
+            </div>
+            
+            <a href="#suco" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 rounded-xl font-medium text-sm transition-colors">
+                <i class="fas fa-tools w-5"></i> Sự cố & An toàn
+            </a>
+            <a href="#chatluong" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 rounded-xl font-medium text-sm transition-colors">
+                <i class="fas fa-star-half-alt w-5"></i> Chất lượng & Khiếu nại
+            </a>
+            <a href="#danhmuc" class="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl font-medium text-sm transition-colors">
+                <i class="fas fa-ban w-5"></i> Danh mục cấm
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-100">
+            <div class="flex items-center gap-3 px-4 py-2">
+                <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold">NV</div>
+                <div>
+                    <p class="text-xs font-bold text-slate-800">Nhân viên Dịch vụ</p>
+                    <p class="text-[10px] text-green-500 font-bold"><i class="fas fa-circle text-[8px] mr-1"></i>Đang trong ca</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+        <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 flex-shrink-0 z-10 shadow-sm">
+            <div class="flex items-center gap-4">
+                <button class="md:hidden text-slate-500 hover:text-brand">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <h2 class="text-lg font-bold text-slate-800 hidden sm:block">Bảng Điều Khiển Vận Hành</h2>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="text-right hidden sm:block">
+                    <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest" id="currentDate">Hôm nay</p>
+                    <p class="text-sm font-black text-slate-700" id="currentTime">00:00:00</p>
+                </div>
+                <button class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 relative">
+                    <i class="fas fa-bell"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                </button>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 custom-scrollbar scroll-smooth">
+            
+            <div class="mb-8 bg-brand rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 opacity-10 text-[120px]">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="relative z-10">
+                    <h3 class="font-black text-xl mb-2 uppercase tracking-wide">Mục tiêu vận hành</h3>
+                    <p class="text-white/80 text-sm max-w-2xl mb-4 leading-relaxed">Đảm bảo bán hàng trơn tru, kiểm soát chặt chẽ doanh thu/tồn kho qua KiotViet và nâng cao trải nghiệm khách hàng trong giờ cao điểm.</p>
+                    <div class="flex flex-wrap gap-2 text-[11px] font-bold uppercase tracking-wider">
+                        <span class="bg-white/20 px-3 py-1 rounded-full"><i class="fas fa-bolt mr-1"></i> Nhanh chóng Chính xác</span>
+                        <span class="bg-white/20 px-3 py-1 rounded-full"><i class="fas fa-check-circle mr-1"></i> Đảm bảo vệ sinh</span>
+                        <span class="bg-white/20 px-3 py-1 rounded-full"><i class="fas fa-smile mr-1"></i> Hài lòng</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="widget-card p-5">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tiến độ Checklist</p>
+                            <h4 class="text-2xl font-black text-slate-800 mt-1"><span id="completedCount">0</span><span class="text-sm text-slate-400 font-medium">/15</span></h4>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
+                            <i class="fas fa-tasks text-lg"></i>
+                        </div>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2.5 mb-1">
+                        <div class="bg-blue-500 h-2.5 rounded-full transition-all duration-500" id="progressBar" style="width: 0%"></div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 font-medium" id="progressText">Hoàn thành 0% công việc ngày</p>
+                </div>
+
+                <div class="widget-card p-5">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Hệ thống KiotViet</p>
+                            <h4 class="text-lg font-black text-green-600 mt-2">Đang kết nối</h4>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-500">
+                            <i class="fas fa-wifi text-lg"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 font-medium"><i class="fas fa-check-circle text-green-500 mr-1"></i> Sẵn sàng thanh toán & in bill</p>
+                </div>
+
+                <div class="widget-card p-5">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Cảnh báo tồn kho</p>
+                            <h4 class="text-2xl font-black text-amber-500 mt-1">Bình thường</h4>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-500">
+                            <i class="fas fa-box-open text-lg"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 font-medium italic">Vui lòng kiểm tra báo cáo cuối ngày</p>
+                </div>
+
+                <div class="widget-card p-5 bg-slate-800 text-white border-none">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Phạm vi áp dụng</p>
+                    <ul class="text-sm space-y-2 font-medium">
+                        <li class="flex items-center"><i class="fas fa-user-tag text-brand-light mr-2 w-4"></i> Nhân viên bán hàng</li>
+                        <li class="flex items-center"><i class="fas fa-user-tie text-brand-light mr-2 w-4"></i> Nhân viên giám sát</li>
+                        <li class="flex items-center"><i class="fas fa-store text-brand-light mr-2 w-4"></i> Toàn bộ Căn tin</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                
+                <div id="checklist" class="lg:col-span-2 widget-card flex flex-col h-[600px]">
+                    <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-2xl">
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fas fa-clipboard-check text-brand"></i> Checklist Công Việc Hàng Ngày
+                        </h3>
+                        <span class="text-xs font-bold bg-white px-3 py-1 rounded-full border border-slate-200 text-slate-500">Tháng này</span>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-2 custom-scrollbar" id="taskContainer">
+                    </div>
+                </div>
+
+                <div id="quytrinh" class="widget-card flex flex-col h-[600px] overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 bg-slate-50/50 rounded-t-2xl">
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fas fa-sync-alt text-brand"></i> Quy trình Bán hàng
+                        </h3>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-5 custom-scrollbar bg-white">
+                        <div class="relative border-l-2 border-slate-100 ml-3 space-y-6">
+                            
+                            <div class="relative pl-6">
+                                <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-brand border-4 border-white"></div>
+                                <span class="text-[10px] font-black uppercase text-brand tracking-widest">Bước 1</span>
+                                <h4 class="text-sm font-bold text-slate-800 mb-1">Chuẩn bị quầy</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed">Trước 30'. Dọn vệ sinh, đăng nhập KiotViet, bật Tivi.</p>
+                            </div>
+                            
+                            <div class="relative pl-6">
+                                <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-4 border-white"></div>
+                                <span class="text-[10px] font-black uppercase text-blue-500 tracking-widest">Bước 2 & 3</span>
+                                <h4 class="text-sm font-bold text-slate-800 mb-1">Nhận Order & Đợi món</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed">Chọn món, thu tiền mặt. <strong>Bắt buộc in bill</strong> cho món đợi chế biến.</p>
+                            </div>
+
+                            <div class="relative pl-6">
+                                <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-orange-500 border-4 border-white"></div>
+                                <span class="text-[10px] font-black uppercase text-orange-500 tracking-widest">Bước 4</span>
+                                <h4 class="text-sm font-bold text-slate-800 mb-2">Nhận hàng</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed mb-2">Khách đưa bill, NV chuẩn bị món Nhanh-Đúng-Đủ.</p>
+                            </div>
+
+                            <div class="relative pl-6">
+                                <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-400 border-4 border-white"></div>
+                                <span class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Bước 5</span>
+                                <h4 class="text-sm font-bold text-slate-800 mb-1">Chốt ca</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed">Kiểm kê hàng, thu tiền. Đối soát KiotViet. Vệ sinh tổng thể.</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tieuchuan" class="mb-8 widget-card p-6">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-6">
+                    <i class="fas fa-id-card-alt text-brand"></i> Tiêu chuẩn Diện mạo & Vệ sinh cá nhân
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col">
+                        <div class="flex items-center gap-2 mb-2 text-brand font-bold text-sm">
+                            <i class="fas fa-tshirt"></i> <span>Trang phục</span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed font-medium">Mặc đúng đồ bảo hộ quy định (tạp dề, đồng phục căn tin đầy đủ).</p>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col">
+                        <div class="flex items-center gap-2 mb-2 text-blue-600 font-bold text-sm">
+                            <i class="fas fa-user-check"></i> <span>Vệ sinh cá nhân</span>
+                        </div>
+                        <ul class="text-xs text-slate-600 space-y-1.5 font-medium list-disc list-inside">
+                            <li>Tóc gọn gàng, búi/kẹp cao.</li>
+                            <li>Móng tay cắt ngắn, không sơn màu đậm.</li>
+                            <li><b>Không đeo trang sức</b> (nhẫn, vòng).</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col">
+                        <div class="flex items-center gap-2 mb-2 text-green-600 font-bold text-sm">
+                            <i class="fas fa-hands-wash"></i> <span>Bảo hộ thực phẩm</span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed font-medium"><b>Bắt buộc mang găng tay 1 lần</b> khi chia/gắp đồ ăn. Thay mới sau mỗi lượt phục vụ món khác hoặc khi bẩn.</p>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col">
+                        <div class="flex items-center gap-2 mb-2 text-amber-600 font-bold text-sm">
+                            <i class="fas fa-broom"></i> <span>Vệ sinh quầy kệ</span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed font-medium">Dọn dẹp sạch sẽ quầy kệ, mặt bàn tính tiền và <b>đổ rác ngay sau mỗi ca bán hàng</b>.</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div id="suco" class="widget-card p-6 border-t-4 border-t-orange-500">
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-5">
+                        <i class="fas fa-tools text-orange-500"></i> Xử lý Sự cố & An toàn
+                    </h3>
+                    <div class="space-y-5">
+                        <div class="bg-orange-50/50 p-4 rounded-xl border border-orange-100">
+                            <h4 class="text-sm font-bold text-slate-700 mb-2 border-b border-orange-200 pb-2">Xử lý sự cố Kỹ thuật / Tiện ích</h4>
+                            <ul class="text-xs text-slate-600 space-y-2">
+                                <li class="flex gap-2 items-start"><i class="fas fa-desktop text-orange-400 mt-0.5"></i> <span><b>Lỗi KiotViet/Mạng:</b> Ghi chép đơn hàng thủ công vào sổ. Báo cáo quản lý ngay khi hệ thống khôi phục để cập nhật dữ liệu.</span></li>
+                                <li class="flex gap-2 items-start"><i class="fas fa-bolt text-orange-400 mt-0.5"></i> <span><b>Mất Điện/Nước/Sữa chữa hư hỏng:</b> Kiểm tra tình trạng các thiết bị và báo cáo ngay cho Quản lý.</span></li>
+                            </ul>
+                        </div>
+                        <div class="bg-orange-50/50 p-4 rounded-xl border border-orange-100">
+                            <h4 class="text-sm font-bold text-slate-700 mb-2 border-b border-orange-200 pb-2">An toàn lao động</h4>
+                            <ul class="text-xs text-slate-600 space-y-2">
+                                <li class="flex gap-2 items-start"><i class="fas fa-mitten text-orange-400 mt-0.5"></i> <span>Luôn mang găng tay cách nhiệt khi sử dụng lò vi sóng, bếp chiên hoặc tiếp xúc vật nóng.</span></li>
+                                <li class="flex gap-2 items-start"><i class="fas fa-fire-alt text-orange-400 mt-0.5"></i> <span>Tuyệt đối không để vật dụng dễ cháy gần các nguồn nhiệt.</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="chatluong" class="widget-card p-6 border-t-4 border-t-blue-500">
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-5">
+                        <i class="fas fa-star-half-alt text-blue-500"></i> Chất lượng & Khiếu nại
+                    </h3>
+                    <div class="space-y-5">
+                        <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                            <h4 class="text-sm font-bold text-slate-700 mb-2 border-b border-blue-200 pb-2">Giải quyết Khiếu nại</h4>
+                            <ul class="text-xs text-slate-600 space-y-2">
+                                <li class="flex gap-2 items-start"><i class="fas fa-comments text-blue-500 mt-0.5"></i> <span><b>Khách hàng:</b> Áp dụng nguyên tắc "Lắng nghe & Xin lỗi", không tranh cãi. Ghi nhận và báo Quản lý xử lý.</span></li>
+                                <li class="flex gap-2 items-start"><i class="fas fa-exclamation-circle text-blue-500 mt-0.5"></i> <span><b>Báo cáo vi phạm:</b> Mọi sự cố ATVSTP, thất thoát, hư hỏng phải báo cáo Quản lý ngay lập tức.</span></li>
+                            </ul>
+                        </div>
+                        <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                            <h4 class="text-sm font-bold text-slate-700 mb-2 border-b border-blue-200 pb-2">Kiểm soát Chất lượng & Date</h4>
+                            <ul class="text-xs text-slate-600 space-y-2">
+                                <li class="flex gap-2 items-start"><i class="fas fa-thermometer-half text-blue-500 mt-0.5"></i> <span><b>Nhiệt độ:</b> Kiểm tra thiết bị giữ nhiệt/tủ lạnh/nồi chiên đa năng hàng ngày.</span></li>
+                                <li class="flex gap-2 items-start"><i class="fas fa-calendar-times text-blue-500 mt-0.5"></i> <span><b>Hàng cận Date:</b> Kiểm tra và báo cáo hàng cận date (còn dưới 7 ngày) để xử lý khuyến mãi tránh lãng phí. Tuân thủ tuyệt đối quy tắc FEFO.</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="danhmuc" class="widget-card p-6 mb-8 border-l-4 border-l-red-600 bg-red-50/40">
+                <h3 class="font-bold text-red-700 flex items-center gap-2 mb-5 text-lg uppercase tracking-wider">
+                    <i class="fas fa-ban text-2xl"></i> Danh Mục Nghiêm Cấm
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-red-900 font-medium">
+                    <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-red-100 shadow-sm transition hover:bg-red-50">
+                        <i class="fas fa-mobile-alt text-red-500 text-lg"></i> 
+                        <span>Sử dụng điện thoại cá nhân trong giờ phục vụ.</span>
+                    </div>
+                    <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-red-100 shadow-sm transition hover:bg-red-50">
+                        <i class="fas fa-hamburger text-red-500 text-lg"></i> 
+                        <span>Ăn uống, làm việc riêng tại khu vực quầy.</span>
+                    </div>
+                    <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-red-100 shadow-sm transition hover:bg-red-50">
+                        <i class="fas fa-tags text-red-500 text-lg"></i> 
+                        <span>Tự ý thay đổi giá bán hoặc khuyến mãi.</span>
+                    </div>
+                    <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-red-100 shadow-sm transition hover:bg-red-50">
+                        <i class="fas fa-coins text-red-500 text-lg"></i> 
+                        <span>Gom tiền lẻ/tiền bán hàng cho mục đích cá nhân.</span>
+                    </div>
+                    <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-red-100 shadow-sm transition hover:bg-red-50 lg:col-span-2">
+                        <i class="fas fa-skull-crossbones text-red-500 text-lg"></i> 
+                        <span>Tuyệt đối không sử dụng đồ ăn hết hạn (Hủy hàng tồn dư sai quy định).</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="baocao" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="widget-card p-6">
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-4">
+                        <i class="fas fa-file-excel text-brand"></i> Lưu trữ hồ sơ
+                    </h3>
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-cloud-download-alt"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">Báo cáo doanh thu KiotViet</h4>
+                                <p class="text-xs text-slate-500">Hệ thống / Xuất file Excel định kỳ</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-[10px] text-slate-400 uppercase font-bold">Thời gian lưu</span>
+                            <span class="text-sm font-black text-brand">1 NĂM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget-card p-6">
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-4">
+                        <i class="fas fa-chart-line text-brand"></i> Chế độ báo cáo
+                    </h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center p-3 border border-slate-100 rounded-lg text-sm">
+                            <span class="font-medium text-slate-700">Doanh thu theo ngày</span>
+                            <span class="text-[10px] font-bold bg-slate-100 px-2 py-1 rounded text-slate-600">CUỐI MỖI NGÀY</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 border border-slate-100 rounded-lg text-sm">
+                            <span class="font-medium text-slate-700">Báo cáo tồn kho/hủy hàng (nếu có)</span>
+                            <span class="text-[10px] font-bold bg-slate-100 px-2 py-1 rounded text-slate-600">MỖI NGÀY</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 border border-slate-100 rounded-lg text-sm">
+                            <span class="font-medium text-slate-700">Tổng hợp doanh thu & hàng</span>
+                            <span class="text-[10px] font-bold bg-brand/10 text-brand px-2 py-1 rounded">MỖI THÁNG</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8 widget-card p-6">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-4 uppercase tracking-wider text-sm">
+                    <i class="fas fa-map text-brand"></i> Sơ đồ trực quan Quy trình hoạt động Căn tin
+                </h3>
+                <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 flex justify-center items-center">
+                    <img id="zoomableImg" src="quy trình căn tin nè nè.png" alt="Bảng phân tích quy trình hoạt động căn tin" class="w-full max-w-4xl h-auto rounded-lg shadow-sm cursor-zoom-in hover:opacity-90 transition duration-200">
+                </div>
+            </div>
+
+            <footer class="text-center pb-8 pt-4 border-t border-slate-200 mt-8">
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">© 2026 Hệ thống Trường Việt Mỹ - Căn tin trường học</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <div id="imageModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300 cursor-zoom-out">
+        <button id="closeModal" class="absolute top-4 right-4 text-white hover:text-slate-300 text-3xl p-2 z-50 focus:outline-none transition-colors">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="max-w-[95vw] max-h-[95vh] p-2 flex items-center justify-center">
+            <img id="modalImg" src="" alt="Sơ đồ thu lớn" class="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl transform scale-95 transition-transform duration-300 cursor-default">
+        </div>
+    </div>
+
+    <script>
+        // Checklist Data 
+        const tasks = [
+            { id: 1, text: "Mở cửa căn tin, bật đèn – quạt – thiết bị, màn hình Tivi", group: "Đầu ca" },
+            { id: 2, text: "Kiểm tra vệ sinh quầy bán, khu vực tính tiền, trang bị bao rác", group: "Đầu ca" },
+            { id: 3, text: "Kiểm tra bảo hộ, tóc gọn, không đeo trang sức", group: "Đầu ca" },
+            { id: 4, text: "Chuẩn bị hàng hóa (mì trộn, xúc xích, bánh ngọt, nước...)", group: "Đầu ca" },
+            
+            { id: 5, text: "Vệ sinh khu vực quầy căn tin, khu vực tính tiền liên tục", group: "Trong ca" },
+            { id: 6, text: "Sử dụng găng tay dùng 1 lần khi chia đồ ăn (thay sau mỗi lần)", group: "Trong ca" },
+            { id: 7, text: "Nhận hàng và Kiểm tra số lượng, hạn sử dụng sản phẩm", group: "Trong ca" },
+            { id: 8, text: "Đề xuất hàng hóa khi gần hết cho người giám sát", group: "Trong ca" },
+            { id: 9, text: "Bảo quản sản phẩm đúng cách (FEFO)", group: "Trong ca" },
+            { id: 10, text: "Phục vụ học sinh, giáo viên nhanh – đúng – đủ", group: "Trong ca" },
+            { id: 11, text: "Giữ quầy sạch sẽ, lau chùi sau mỗi đợt bán hàng", group: "Trong ca" },
+            { id: 12, text: "Chuẩn bị hàng bán buổi chiều - giờ ra chơi", group: "Trong ca" },
+            
+            { id: 13, text: "Đổ rác đúng nơi, phân loại theo hướng dẫn", group: "Cuối ca" },
+            { id: 14, text: "Đổ rác trong khu vực căn tin trước mỗi ca làm việc", group: "Cuối ca" },
+            { id: 15, text: "Kiểm kê hàng hóa và thu tiền bán hàng cuối ngày", group: "Cuối ca" }
+        ];
+
+        // 1. Hàm khởi tạo giao diện Checklist (Phần code bị cắt của bạn đã sửa hoàn chỉnh)
+        function renderChecklist() {
+            const container = document.getElementById('taskContainer');
+            if(!container) return;
+            container.innerHTML = '';
+            let currentGroup = '';
+            
+            tasks.forEach((task) => {
+                if (task.group !== currentGroup) {
+                    currentGroup = task.group;
+                    const groupHeader = document.createElement('div');
+                    groupHeader.className = 'sticky top-0 bg-white/95 backdrop-blur-sm z-10 px-4 py-2 mt-4 mb-2 shadow-sm border-b border-slate-100';
+                    groupHeader.innerHTML = `<span class="text-xs font-black uppercase text-brand tracking-wider">${currentGroup}</span>`;
+                    container.appendChild(groupHeader);
+                }
+
+                const taskEl = document.createElement('label');
+                taskEl.className = 'flex items-start gap-3 p-3 mx-2 my-1 bg-slate-50 hover:bg-slate-100/80 rounded-xl cursor-pointer transition-colors border border-slate-100';
+                taskEl.innerHTML = `
+                    <input type="checkbox" class="task-checkbox hidden" data-id="${task.id}">
+                    <div class="w-5 h-5 rounded border border-slate-300 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors">
+                        <svg class="w-3 h-3 text-white hidden" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="task-label text-xs font-medium text-slate-700 select-none">${task.text}</div>
+                `;
+
+                // Sự kiện khi nhấn vào checkbox để đổi màu chữ gạch ngang và cập nhật % tiến trình
+                const checkbox = taskEl.querySelector('.task-checkbox');
+                const label = taskEl.querySelector('.task-label');
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) {
+                        label.classList.add('completed');
+                    } else {
+                        label.classList.remove('completed');
+                    }
+                    updateProgress();
+                });
+
+                container.appendChild(taskEl);
+            });
+        }
+
+        // 2. Hàm xử lý logic tính toán phần trăm hoàn thành (%)
+        function updateProgress() {
+            const allCheckboxes = document.querySelectorAll('.task-checkbox');
+            const checkedCheckboxes = document.querySelectorAll('.task-checkbox:checked');
+            const total = allCheckboxes.length;
+            const completed = checkedCheckboxes.length;
+            
+            document.getElementById('completedCount').innerText = completed;
+            const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressText').innerText = `Hoàn thành ${percent}% công việc ngày`;
+        }
+
+        // 3. Logic Đồng hồ Thời gian thực trên Header
+        function initLiveClock() {
+            function updateClock() {
+                const now = new Date();
+                const dateOptions = { weekday: 'long', year: 'numeric', month: '2-digit', day: '2-digit' };
+                document.getElementById('currentDate').innerText = now.toLocaleDateString('vi-VN', dateOptions);
+                document.getElementById('currentTime').innerText = now.toLocaleTimeString('vi-VN');
+            }
+            setInterval(updateClock, 1000);
+            updateClock();
+        }
+
+        // 4. CHỨC NĂNG ZOOM SƠ ĐỒ QUY TRÌNH (Yêu cầu chính của bạn)
+        function initImageZoom() {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImg');
+            const zoomableImg = document.getElementById('zoomableImg');
+
+            if (!modal || !modalImg || !zoomableImg) return;
+
+            // Mở modal khi bấm vào ảnh sơ đồ
+            zoomableImg.addEventListener('click', () => {
+                modalImg.src = zoomableImg.src;
+                modal.classList.remove('hidden');
+                // Tạo hiệu ứng fade-in và phóng to mượt mà bằng setTimeout rỗng
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modalImg.classList.remove('scale-95');
+                    modalImg.classList.add('scale-100');
+                }, 20);
+            });
+
+            // Hàm ẩn modal kèm hiệu ứng thu nhỏ
+            const hideModal = () => {
+                modal.classList.add('opacity-0');
+                modalImg.classList.remove('scale-100');
+                modalImg.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300); // Trùng với duration-300 của hiệu ứng Tailwind
+            };
+
+            // Đóng khi nhấn vào nền mờ hoặc nút X
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal || e.target.closest('#closeModal')) {
+                    hideModal();
+                }
+            });
+
+            // Đóng nhanh bằng phím ESC trên bàn phím
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    hideModal();
+                }
+            });
+        }
+
+        // Kích hoạt tất cả các thành phần khi trang tải xong
+        window.addEventListener('DOMContentLoaded', () => {
+            renderChecklist();
+            updateProgress();
+            initLiveClock();
+            initImageZoom();
+        });
+    </script>
+</body>
+</html>
